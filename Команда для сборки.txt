@@ -1,0 +1,1 @@
+ pyinstaller --noupx --windowed --onefile --name="MLI. Keyboard" --path="S:/Projects/KrasGMU/MLI Keyboard/repo/venv/Lib/site-packages" --specpath ..\builds\ --distpath ..\builds main.py
