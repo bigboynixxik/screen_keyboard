@@ -1,10 +1,13 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QDesktopWidget, QLabel, QLineEdit, QDialogButtonBox, QVBoxLayout, QWidget, QMessageBox
 
+from mli_keyboard.arrangement.buttons_enum import RussianLangEnum
 from mli_keyboard.config import SETTINGS_TITLE
-from mli_keyboard.utils.settings import get_settings, save_settings
 from mli_keyboard.misc.fsm import FSM
+from mli_keyboard.utils.settings import get_settings
+
+change_data = None
 
 
 class AddButtonWindow(QWidget):
@@ -13,6 +16,7 @@ class AddButtonWindow(QWidget):
     def __init__(self, font_family, font_size):
         super().__init__()
 
+        self.ready = None
         self.button_box = None
         self.count_input = None
         self.count_label = None
@@ -42,6 +46,7 @@ class AddButtonWindow(QWidget):
         # Поле для ввода буквы
         self.letter_label = QLabel("Какую букву добавить?")
         self.letter_input = QLineEdit(self)
+        self.letter_input.setMaxLength(1)
         self.layout.addWidget(self.letter_label)
         self.layout.addWidget(self.letter_input)
 
@@ -85,7 +90,7 @@ class AddButtonWindow(QWidget):
         """Обработка нажатия кнопки 'OK'."""
         letter, count = self.get_input()
         if letter and count > 0:
-
+            self.check_data()
             self.close()
         else:
             self.show_error("Пожалуйста, введите правильные данные.")
@@ -108,3 +113,12 @@ class AddButtonWindow(QWidget):
         QWidget.closeEvent(self, event)
         FSM.WindowsGroup.from_add_button_to_main()
 
+    def check_data(self):
+        letter, count = self.get_input()
+        for sym in RussianLangEnum:
+            if letter.lower() == chr(sym.value):
+                self.ready = sym, count
+                break
+
+    def get_data(self):
+        return self.ready

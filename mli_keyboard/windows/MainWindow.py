@@ -1,11 +1,13 @@
+import random
+
 from PyQt5.QtCore import QTimer, QUrl, Qt
 from PyQt5.QtGui import QPainter
 from PyQt5.QtMultimedia import QSoundEffect
 from PyQt5.QtWidgets import QDesktopWidget, QGraphicsScene, QGraphicsView, QMainWindow, QVBoxLayout, QWidget, \
-    QGraphicsItem, QMenu
-import random
+    QMenu
 
-from mli_keyboard.arrangement.buttons_enum import UtilityKeysEnum
+from mli_keyboard import config
+from mli_keyboard.arrangement.buttons_enum import UtilityKeysEnum, AuxiliaryKeysEnum
 from mli_keyboard.arrangement.configuration import get_button_coords
 from mli_keyboard.buttons.letter_button import LetterButton
 from mli_keyboard.buttons.utility_buttons import BackspaceButton, CapsLockButton, EnterButton, ExitButton, \
@@ -22,6 +24,7 @@ from mli_keyboard.utils.voronoi_points import create_voronoi_points, get_hexagon
 class MainWindow(QMainWindow):
     """Главное окно, заполненное функциональной клавиатурой - сценой с полигонами
     """
+
     def __init__(self):
         super().__init__()
 
@@ -48,7 +51,6 @@ class MainWindow(QMainWindow):
 
         self.initUI()
         self.set_attributes()
-
 
     def initUI(self):
         """Настраивает интерфейс главного окна, состоящий из верхних подсказок и полигона с клавишами
@@ -160,6 +162,7 @@ class MainWindow(QMainWindow):
         матрицам расположения символов на шестигранной клавиатуре
 
         :return: Матрица словарей вида: {(coord x, coord y): symbol}
+        :return: Матрица словарей вида: {(coord x, coord y): symbol}
         :rtype: list
         """
         if FSM.LangSymGroup.sym == DESIGN_OFF:
@@ -207,7 +210,7 @@ class MainWindow(QMainWindow):
                 self.keyboard_list.append(button)
                 self.scene.addItem(button)
 
-    def draw_mixed_letters_by_pixel(self, word_matrix: list,  draw_upper=False):
+    def draw_mixed_letters_by_pixel(self, word_matrix: list, draw_upper=False):
         sound_click = QSoundEffect()
         sound_click.setSource(QUrl.fromLocalFile(SOUND_CLICK_LETTER))
         sound_click.setVolume(self.volume_level)
@@ -229,7 +232,7 @@ class MainWindow(QMainWindow):
             for center in row:
                 center = update_center(center, self.offset, self.button_scale)
                 polygon = get_hexagon_voronoi_version(center, self.voronoi_diagram, self.points)
-                symbol = chr(btns[amount_btns-1].value)
+                symbol = chr(btns[amount_btns - 1].value)
                 amount_btns -= 1
                 # if draw_upper:
                 #     symbol = symbol.upper()
@@ -313,7 +316,7 @@ class MainWindow(QMainWindow):
 
         if self.mixed_letters:
             self.draw_mixed_letters_by_pixel(self.get_keyboard_type(), FSM.CapsGroup.shift_pressed or FSM.CapsGroup.
-                                   caps_lock_pressed)
+                                             caps_lock_pressed)
             self.mixed_letters = False
         else:
             self.draw_letters_by_pixel(self.get_keyboard_type(), FSM.CapsGroup.shift_pressed or FSM.CapsGroup.
@@ -334,3 +337,13 @@ class MainWindow(QMainWindow):
         """Обновляет окно. Метод выполняется после изменения конфигураций из окна настроек
         """
         self.__init__()
+
+    def add_button(self, data):
+        """В методе производится обработка добавления новых символов"""
+        # print('huhu')
+
+        config.RU_MATRIX.append(
+            [AuxiliaryKeysEnum.INVISIBLE] + [data[0]] * data[1] + [AuxiliaryKeysEnum.INVISIBLE] * 10)
+        config.RU_MATRIX.append([AuxiliaryKeysEnum.INVISIBLE] * 3 + [AuxiliaryKeysEnum.INVISIBLE] * (data[1] + 2))
+        # print(config.RU_MATRIX)
+        self.redraw_window()

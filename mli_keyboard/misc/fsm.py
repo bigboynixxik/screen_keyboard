@@ -13,6 +13,7 @@ class FSM:
         settings_window = None
         add_window = None
 
+
         @classmethod
         def start_app(cls, splash_screen):
             """Запускает приложение, запустив, первым шагом, загрузочный экран
@@ -69,11 +70,12 @@ class FSM:
             cls.add_window.activateWindow()
             cls.add_window.show()
 
-
         @classmethod
         def from_add_button_to_main(cls):
             """Переключает интерфейс с окна настроек на главное окно
             """
+            cls.main_window.add_button(cls.add_window.get_data())
+            #cls.main_window.redraw_window()
             cls.add_window = None
             cls.main_window.activateWindow()
             cls.main_window.show()
