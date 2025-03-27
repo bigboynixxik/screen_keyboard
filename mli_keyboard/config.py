@@ -8,7 +8,7 @@ SOUNDS_PATH = 'mli_keyboard/resources/sounds/'
 # Размер главного окна
 MONITOR_HD_HEIGHT = 1080
 INIT_HEIGHT = 720
-INIT_WIDTH = 820
+INIT_WIDTH = 860
 
 # Горизонтальные и вертикальные смещения клавиш
 H_OFFSET = 48.888888888888886

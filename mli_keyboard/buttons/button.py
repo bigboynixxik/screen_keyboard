@@ -1,4 +1,3 @@
-from PyQt5.QtCore import Qt
 import pyautogui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QFont, QPen, QTransform
@@ -179,3 +178,7 @@ class Button(QGraphicsPolygonItem, ButtonAnimationMixin):
             # window.SetFocus()
 
             self.button_action()
+
+    def flexable(self, flag):
+        self.setFlag(self.ItemIsMovable, flag)
+        self.setFlag(self.ItemIsSelectable, flag)

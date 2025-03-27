@@ -4,6 +4,7 @@ from mli_keyboard.config import DESIGN_OFF, DESIGN_SYM, QUEUE_LANG, QUEUE_SYM
 class FSM:
     """Класс, реализующий конечный детерминированный автомат для работы с переключаемыми состояниями в клавиатуре
     """
+
     class WindowsGroup:
         """Группа состояний для управления взаимодействием между всеми окнами: загрузочным экраном, главным окном и
         окном настроек
@@ -11,8 +12,7 @@ class FSM:
         splash_screen = None
         main_window = None
         settings_window = None
-        add_window = None
-
+        switch_window = None
 
         @classmethod
         def start_app(cls, splash_screen):
@@ -59,24 +59,9 @@ class FSM:
             cls.main_window.show()
 
         @classmethod
-        def from_main_to_add_button(cls, add_window):
-            """
-            Переключает mainWindow в AddButton window
-            :param add_window: Экземпляр окна с добавлением кнопок
-            :type add_window: class: `windows.AddButtonWindow.AddButtonWindow`
-            """
-            cls.add_window = add_window
+        def switch_flexibility_buttons(cls):
             cls.main_window.hide()
-            cls.add_window.activateWindow()
-            cls.add_window.show()
-
-        @classmethod
-        def from_add_button_to_main(cls):
-            """Переключает интерфейс с окна настроек на главное окно
-            """
-            cls.main_window.add_button(cls.add_window.get_data())
-            #cls.main_window.redraw_window()
-            cls.add_window = None
+            cls.main_window.switch_flexibility_buttons()
             cls.main_window.activateWindow()
             cls.main_window.show()
 

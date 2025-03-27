@@ -15,6 +15,6 @@ class WindowCreators:
         return SettingsWindow(font_family, font_size)
 
     @staticmethod
-    def load_add_button_window(font_family, font_size):
-        from mli_keyboard.windows.AddButtonWindow import AddButtonWindow
-        return AddButtonWindow(font_family, font_size)
+    def load_flex_keyboard_window(font_family, font_size):
+        from mli_keyboard.windows.FlexKeyboardWindow import FlexKeyboardWindow
+        return FlexKeyboardWindow(font_family, font_size)

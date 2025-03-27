@@ -6,13 +6,12 @@ from PyQt5.QtMultimedia import QSoundEffect
 from PyQt5.QtWidgets import QDesktopWidget, QGraphicsScene, QGraphicsView, QMainWindow, QVBoxLayout, QWidget, \
     QMenu
 
-from mli_keyboard import config
-from mli_keyboard.arrangement.buttons_enum import UtilityKeysEnum, AuxiliaryKeysEnum
+from mli_keyboard.arrangement.buttons_enum import UtilityKeysEnum
 from mli_keyboard.arrangement.configuration import get_button_coords
 from mli_keyboard.buttons.letter_button import LetterButton
 from mli_keyboard.buttons.utility_buttons import BackspaceButton, CapsLockButton, EnterButton, ExitButton, \
     LangLayoutButton, MinimizeButton, MoveButton, SettingsButton, ShiftButton, SpaceButton, SymbolLayoutButton, \
-    LeftButton, RightButton, UpButton, DownButton, AddButton
+    LeftButton, RightButton, UpButton, DownButton, SwitchButton
 from mli_keyboard.config import DESIGN_OFF, INIT_HEIGHT, INIT_WIDTH, LAYOUT_STATUSES_LANG, LAYOUT_STATUSES_SYM, \
     LETTER_FONT_SIZE, MONITOR_HD_HEIGHT, SOUND_CLICK_LETTER, SOUND_CLICK_SPECIAL, UTILITY_BUTTONS_CONFIGS, \
     UTILITY_FONT_FAMILY, BACK_COLOR_UTILITY, BACK_COLOR_LETTER
@@ -48,6 +47,8 @@ class MainWindow(QMainWindow):
         self.change_lang_button = None
 
         self.mixed_letters = False
+
+        self.flexibility = False
 
         self.initUI()
         self.set_attributes()
@@ -271,7 +272,7 @@ class MainWindow(QMainWindow):
             UtilityKeysEnum.RIGHT: RightButton,
             UtilityKeysEnum.UP: UpButton,
             UtilityKeysEnum.DOWN: DownButton,
-            UtilityKeysEnum.PLUS: AddButton
+            UtilityKeysEnum.PLUS: SwitchButton
         }
 
         for button in utility_buttons_dict.items():
@@ -338,12 +339,14 @@ class MainWindow(QMainWindow):
         """
         self.__init__()
 
-    def add_button(self, data):
-        """В методе производится обработка добавления новых символов"""
-        # print('huhu')
-
-        config.RU_MATRIX.append(
-            [AuxiliaryKeysEnum.INVISIBLE] + [data[0]] * data[1] + [AuxiliaryKeysEnum.INVISIBLE] * 10)
-        config.RU_MATRIX.append([AuxiliaryKeysEnum.INVISIBLE] * 3 + [AuxiliaryKeysEnum.INVISIBLE] * (data[1] + 2))
-        # print(config.RU_MATRIX)
-        self.redraw_window()
+    def switch_flexibility_buttons(self):
+        """Функция включает и выключает гибкость клавиш"""
+        if not self.flexibility:
+            self.flexibility = True
+            for key in self.keyboard_list:
+                key.flexable(self.flexibility)
+        else:
+            self.flexibility = False
+            for key in self.keyboard_list:
+                key.flexable(self.flexibility)
+                self.redraw_window()

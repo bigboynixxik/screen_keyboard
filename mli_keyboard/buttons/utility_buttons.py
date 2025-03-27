@@ -334,16 +334,12 @@ class DownButton(Button):
         keyboard.press_and_release('down')
 
 
-class AddButton(Button):
+class SwitchButton(Button):
     """Класс клавиши добавления кнопок"""
+
     def __init__(self, *args, **kwargs):
-        super(AddButton, self).__init__(*args, **kwargs)
+        super(SwitchButton, self).__init__(*args, **kwargs)
 
     def button_action(self):
-        """Вызывает окно с добавлением кнопок"""
-        if FSM.WindowsGroup.add_window is None:
-            add_button = WindowCreators.load_add_button_window(
-                SETTINGS_FONT_FAMILY,
-                int(SETTINGS_FONT_SIZE * self.parent.offset * self.parent.button_scale),
-            )
-            FSM.WindowsGroup.from_main_to_add_button(add_button)
+        """Кнопка вызывает класс для смены гибкости клавиш"""
+        FSM.WindowsGroup.switch_flexibility_buttons()
