@@ -182,3 +182,21 @@ class Button(QGraphicsPolygonItem, ButtonAnimationMixin):
     def flexable(self, flag):
         self.setFlag(self.ItemIsMovable, flag)
         self.setFlag(self.ItemIsSelectable, flag)
+
+    def to_dict(self):
+        return {
+            "class": self.__class__.__name__,
+            "sym": self.sym,
+            "font_family": self.font_family,
+            "font_size": self.font_size,
+            "font_bold": self.font_bold,
+            "button_y_offset": self.button_y_offset,
+            "back_color": self.back_color,
+            "backlight_color": self.backlight_color,
+            "back_color_on_click": self.back_color_on_click,
+            "key_border_color": self.key_border_color,
+            "key_border_width": self.key_border_width,
+            "polygon": [(p.x(), p.y()) for p in self.polygon],
+            "pos": (self.pos().x(), self.pos().y()),
+            "sound_click_path": self.sound_click.source().toLocalFile()  # 🔊 путь до звука
+        }

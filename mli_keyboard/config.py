@@ -7,8 +7,8 @@ SOUNDS_PATH = 'mli_keyboard/resources/sounds/'
 
 # Размер главного окна
 MONITOR_HD_HEIGHT = 1080
-INIT_HEIGHT = 720
-INIT_WIDTH = 860
+INIT_HEIGHT = 1080
+INIT_WIDTH = 1920
 
 # Горизонтальные и вертикальные смещения клавиш
 H_OFFSET = 48.888888888888886
@@ -186,7 +186,6 @@ RU_MATRIX = [
      AuxiliaryKeysEnum.INVISIBLE, AuxiliaryKeysEnum.INVISIBLE]
 ]
 
-
 EN_MATRIX = [
     [AuxiliaryKeysEnum.INVISIBLE, AuxiliaryKeysEnum.INVISIBLE, AuxiliaryKeysEnum.INVISIBLE, AuxiliaryKeysEnum.INVISIBLE,
      EnglishLangEnum.X,
@@ -303,7 +302,9 @@ UTILITY_BUTTONS_CONFIGS = {
     UtilityKeysEnum.DOWN: {'design': '↓', 'font_size': 14, 'coord': (195.55555555555554, 366.66666666666663),
                            'sound_click_path': SOUND_CLICK_SPECIAL, 'back_color': BACK_COLOR_ARROW,
                            'backlight_color': BACKLIGHT_COLOR_ARROW},
-    UtilityKeysEnum.PLUS: {'design': '+', 'font_size': 18, 'coord': (835, 513.3333333333333),
+    UtilityKeysEnum.PLUS: {'design': '🪶', 'font_size': 18, 'coord': (835, 513.3333333333333),
                            'sound_click_path': SOUND_CLICK_SPECIAL, 'back_color': BACK_COLOR_SETTINGS,
                            'backlight_color': BACKLIGHT_COLOR_SETTINGS}
 }
+
+BUTTONS_FILE_PATH = "keyboard_layout.json"

@@ -1,7 +1,9 @@
+import json
+import os
 import random
 
-from PyQt5.QtCore import QTimer, QUrl, Qt
-from PyQt5.QtGui import QPainter
+from PyQt5.QtCore import QTimer, QUrl, Qt, QPointF
+from PyQt5.QtGui import QPainter, QPolygonF
 from PyQt5.QtMultimedia import QSoundEffect
 from PyQt5.QtWidgets import QDesktopWidget, QGraphicsScene, QGraphicsView, QMainWindow, QVBoxLayout, QWidget, \
     QMenu
@@ -14,7 +16,7 @@ from mli_keyboard.buttons.utility_buttons import BackspaceButton, CapsLockButton
     LeftButton, RightButton, UpButton, DownButton, SwitchButton
 from mli_keyboard.config import DESIGN_OFF, INIT_HEIGHT, INIT_WIDTH, LAYOUT_STATUSES_LANG, LAYOUT_STATUSES_SYM, \
     LETTER_FONT_SIZE, MONITOR_HD_HEIGHT, SOUND_CLICK_LETTER, SOUND_CLICK_SPECIAL, UTILITY_BUTTONS_CONFIGS, \
-    UTILITY_FONT_FAMILY, BACK_COLOR_UTILITY, BACK_COLOR_LETTER
+    UTILITY_FONT_FAMILY, BACK_COLOR_UTILITY, BACK_COLOR_LETTER, BUTTONS_FILE_PATH
 from mli_keyboard.misc.fsm import FSM
 from mli_keyboard.utils.settings import get_settings
 from mli_keyboard.utils.voronoi_points import create_voronoi_points, get_hexagon_voronoi_version, update_center
@@ -309,7 +311,6 @@ class MainWindow(QMainWindow):
         только один раз после запуска приложения
         """
         self.delete_letters()
-
         if self.change_lang_button is None:
             self.draw_lang_button()
         else:
@@ -322,6 +323,8 @@ class MainWindow(QMainWindow):
         else:
             self.draw_letters_by_pixel(self.get_keyboard_type(), FSM.CapsGroup.shift_pressed or FSM.CapsGroup.
                                        caps_lock_pressed)
+
+        self.check_flexibility()
 
     def off_shift(self):
         """Выключение нажатия клавиши Shift
@@ -341,12 +344,83 @@ class MainWindow(QMainWindow):
 
     def switch_flexibility_buttons(self):
         """Функция включает и выключает гибкость клавиш"""
+        sound_click = QSoundEffect()
+        sound_click.setSource(QUrl.fromLocalFile(SOUND_CLICK_LETTER))
+        sound_click.setVolume(self.volume_level)
         if not self.flexibility:
             self.flexibility = True
+            if os.path.exists(BUTTONS_FILE_PATH):
+                keyboard_list = self.load_keyboard_layout(BUTTONS_FILE_PATH, self.parent, self.click_timer,
+                                                          self.animation_timer, sound_click)
             for key in self.keyboard_list:
                 key.flexable(self.flexibility)
+                # try:
+                #     resize_polygon(key.polygon, 200, 200)
+                # except Exception as e:
+                #     print(e)
         else:
             self.flexibility = False
             for key in self.keyboard_list:
                 key.flexable(self.flexibility)
-                self.redraw_window()
+                self.save_keyboard_layout(BUTTONS_FILE_PATH)
+        print(self.keyboard_list)
+
+    def check_flexibility(self):
+        for key in self.keyboard_list:
+            key.flexable(self.flexibility)
+
+    def save_keyboard_layout(self, path):
+        data = [button.to_dict() for button in self.keyboard_list]
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+
+    def load_keyboard_layout(self, path, parent, click_timer, animation_timer, sound_click):
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        buttons = []
+        for item in data:
+            polygon = QPolygonF([QPointF(x, y) for x, y in item["polygon"]])
+            cls = CLASS_MAP[item["class"]]
+            button = cls(
+                polygon=polygon,
+                parent=parent,
+                click_timer=click_timer,
+                animation_timer=animation_timer,
+                sound_click=sound_click,
+                sym=item.get("sym", ""),
+                font_family=item.get("font_family"),
+                font_size=item.get("font_size"),
+                font_bold=item.get("font_bold"),
+                button_y_offset=item.get("button_y_offset"),
+                back_color=item.get("back_color"),
+                backlight_color=item.get("backlight_color"),
+                back_color_on_click=item.get("back_color_on_click"),
+                key_border_color=item.get("key_border_color"),
+                key_border_width=item.get("key_border_width"),
+            )
+            if "pos" in item:
+                button.setPos(*item["pos"])
+            buttons.append(button)
+        return buttons
+
+
+CLASS_MAP = {
+    "LetterButton": LetterButton,
+    "SpaceButton": SpaceButton,
+    "BackspaceButton": BackspaceButton,
+    "EnterButton": EnterButton,
+    "CapsLockButton": CapsLockButton,
+    "ShiftButton": ShiftButton,
+    "SymbolLayoutButton": SymbolLayoutButton,
+    "SettingsButton": SettingsButton,
+    "MoveButton": MoveButton,
+    "MinimizeButton": MinimizeButton,
+    "ExitButton": ExitButton,
+    "LeftButton": LeftButton,
+    "RightButton": RightButton,
+    "UpButton": UpButton,
+    "DownButton": DownButton,
+    "SwitchButton": SwitchButton,
+    "LangLayoutButton": LangLayoutButton,
+}
